@@ -14,17 +14,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.Date;
+
+import javax.validation.Valid;
 
 @RestController
 @EnableAutoConfiguration
 @RequestMapping("/")
-public class ReaderController extends ResponseEntityExceptionHandler {
+public class ReaderController  {
 
   @PostMapping("analyze")
-  public HttpEntity<ResponseBody> getAnalyze(@RequestBody UrlAddress urlAddress) {
+  public HttpEntity<ResponseBody> getAnalyze(@Valid @RequestBody UrlAddress urlAddress) {
 
     ResponseBody responseBody = new ResponseBody();
     responseBody.setAnalyseDate(new Date());
