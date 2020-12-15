@@ -72,7 +72,7 @@ class ApiError {
   }
 
   public void addValidationErrors(List<FieldError> fieldErrors) {
-    fieldErrors.forEach(this::addValidationError);
+    fieldErrors.forEach(fieldError -> addValidationError(fieldError));
   }
 
   private void addValidationError(ObjectError objectError) {
@@ -82,7 +82,7 @@ class ApiError {
   }
 
   public void addValidationError(List<ObjectError> globalErrors) {
-    globalErrors.forEach(this::addValidationError);
+    globalErrors.forEach(objectError -> addValidationError(objectError));
   }
 
   /**
@@ -99,7 +99,7 @@ class ApiError {
   }
 
   public void addValidationErrors(Set<ConstraintViolation<?>> constraintViolations) {
-    constraintViolations.forEach(this::addValidationError);
+    constraintViolations.forEach(cv -> addValidationError(cv));
   }
 
 

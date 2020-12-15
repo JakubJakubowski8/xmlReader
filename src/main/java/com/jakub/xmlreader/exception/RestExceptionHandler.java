@@ -1,6 +1,8 @@
 package com.jakub.xmlreader.exception;
 
 import lombok.extern.slf4j.Slf4j;
+
+import org.simpleframework.xml.core.AttributeException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +23,8 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+
+import java.util.concurrent.ExecutionException;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
@@ -209,6 +213,21 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     ApiError apiError = new ApiError(HttpStatus.METHOD_NOT_ALLOWED, message, ex);
     return new ResponseEntity<Object>(
         apiError, new HttpHeaders(), apiError.getStatus());
+  }
+
+  /**
+   * Handle Exception, handle ExecutionException.class and InterruptedException.class
+   *
+   * @param ex the Exception
+   * @return the ApiError object
+   */
+  @ExceptionHandler({ExecutionException.class, InterruptedException.class })
+  protected ResponseEntity<Object> handleAttributeException(
+      AttributeException ex) {
+    ApiError apiError = new ApiError(BAD_REQUEST);
+    apiError.setMessage("There was an error while parse XML file");
+    apiError.setDebugMessage(ex.getMessage());
+    return buildResponseEntity(apiError);
   }
 
   private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
