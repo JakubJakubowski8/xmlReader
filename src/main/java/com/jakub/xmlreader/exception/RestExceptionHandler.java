@@ -169,7 +169,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   /**
-   * Handle Exception, handle generic Exception.class
+   * Handle generic MethodArgumentTypeMismatchException.class
    *
    * @param ex the Exception
    * @return the ApiError object
@@ -216,16 +216,31 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   /**
-   * Handle Exception, handle ExecutionException.class and InterruptedException.class
+   * Handle ExecutionException.class
    *
    * @param ex the Exception
    * @return the ApiError object
    */
-  @ExceptionHandler({ExecutionException.class, InterruptedException.class })
-  protected ResponseEntity<Object> handleAttributeException(
-      AttributeException ex) {
+  @ExceptionHandler(ExecutionException.class)
+  protected ResponseEntity<Object> handleExecutionException(
+      ExecutionException ex) {
     ApiError apiError = new ApiError(BAD_REQUEST);
-    apiError.setMessage("There was an error while parse XML file");
+    apiError.setMessage("There was an execution error while parse XML file");
+    apiError.setDebugMessage(ex.getMessage());
+    return buildResponseEntity(apiError);
+  }
+
+  /**
+   * Handle InterruptedException.class
+   *
+   * @param ex the Exception
+   * @return the ApiError object
+   */
+  @ExceptionHandler(InterruptedException.class)
+  protected ResponseEntity<Object> handleInterruptedException(
+      InterruptedException ex) {
+    ApiError apiError = new ApiError(BAD_REQUEST);
+    apiError.setMessage("There was an interrupted error while parse XML file");
     apiError.setDebugMessage(ex.getMessage());
     return buildResponseEntity(apiError);
   }
