@@ -14,6 +14,7 @@ import com.jakub.xmlreader.model.Details;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,9 +29,6 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.concurrent.ExecutionException;
 
 @SpringBootTest
@@ -42,9 +40,7 @@ public class ReaderServiceTest {
 
   private static ClientAndServer mockServer;
 
-  private static final HttpClient CLIENT = HttpClient.newBuilder().build();
-
-  private final byte[] xmlBytes;
+  private byte[] xmlBytes;
 
   private final URI uri = URI.create("http://127.0.0.1:1080/data/testdata.xml");
 
@@ -56,7 +52,39 @@ public class ReaderServiceTest {
   @BeforeEach
   public void beforeEach() {
     mockServer = startClientAndServer(1080);
+  }
 
+  @AfterEach
+  public void stopServer() {
+    mockServer.stop();
+  }
+
+  @Test
+  void shouldGetDetailsWhenFromServer() throws ExecutionException, InterruptedException {
+
+    startServer();
+    Details response = readerService.getData(uri);
+    assertThat(response.getTotalPosts()).isEqualTo(4);
+    assertThat(response.getAvgScore()).isEqualTo(1.25);
+  }
+
+  @Test
+  void shouldThrowExecutionExceptionWhenParseError() {
+
+    this.xmlBytes = """
+        <?xml version="1.0" encoding="utf-8"?>
+        <posts>
+          <row < <Id="1" PostTypeId="1" />
+        </posts>
+        """.getBytes();
+    startServer();
+
+    Assertions.assertThrows(ExecutionException.class, () -> {
+      readerService.getData(uri);
+    });
+  }
+
+  private void startServer() {
     new MockServerClient("127.0.0.1", 1080)
         .when(
             request()
@@ -76,38 +104,4 @@ public class ReaderServiceTest {
                 .withBody(binary(xmlBytes))
         );
   }
-
-  @AfterEach
-  public void stopServer() {
-
-    mockServer.stop();
-  }
-
-  @Test
-  void shouldGetDetailsWhenFromServer() throws ExecutionException, InterruptedException {
-
-    Details response = readerService.getData(uri);
-    assertThat(response.getTotalPosts()).isEqualTo(4);
-    assertThat(response.getAvgScore()).isEqualTo(1.25);
-
-  }
-
-  @Test
-  void hitTheServer() throws ExecutionException, InterruptedException {
-
-    HttpRequest request = HttpRequest.newBuilder()
-        .GET()
-        .uri(uri)
-        .build();
-    RowFinder finder = new RowFinder();
-    CLIENT.sendAsync(request, HttpResponse.BodyHandlers.fromLineSubscriber(finder)).exceptionally(ex -> {
-      finder.onError(ex);
-      return null;
-    });
-
-    finder.found().get();
-    assertThat(finder.found().get().getAvgScore()).isEqualTo(1.25);
-
-  }
-
 }
