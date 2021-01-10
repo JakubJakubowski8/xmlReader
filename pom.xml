@@ -110,7 +110,11 @@
 			<artifactId>springfox-boot-starter</artifactId>
 			<version>3.0.0</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.mock-server</groupId>
+			<artifactId>mockserver-junit-jupiter</artifactId>
+			<version>5.11.2</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -119,6 +123,32 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>2.4.0</version>
+			</plugin>
+			<plugin>
+				<groupId>org.mock-server</groupId>
+				<artifactId>mockserver-maven-plugin</artifactId>
+				<version>5.11.2</version>
+				<configuration>
+					<serverPort>1080</serverPort>
+					<logLevel>DEBUG</logLevel>
+					<initializationClass>org.mockserver.maven.ExampleInitializationClass</initializationClass>
+				</configuration>
+				<executions>
+					<execution>
+						<id>process-test-classes</id>
+						<phase>process-test-classes</phase>
+						<goals>
+							<goal>start</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>verify</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>stop</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

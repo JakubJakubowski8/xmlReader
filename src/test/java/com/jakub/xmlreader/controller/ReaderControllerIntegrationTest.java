@@ -30,8 +30,8 @@ import java.util.concurrent.ExecutionException;
 public class ReaderControllerIntegrationTest {
 
   private final UrlAddress url = new UrlAddress("https://test.com");
-  private static final Details details = new DetailsBuilder().build();
-  private static final ResponseBody responseBody = new ResponseBody();
+  private final Details details = new DetailsBuilder().build();
+  private final ResponseBody responseBody = new ResponseBody();
 
   @Autowired
   private WebTestClient webClient;
