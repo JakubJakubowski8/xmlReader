@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   xmlreader:
-    image: jakubjakubowski/xmlreader:0.0.1-SNAPSHOT
+    image: jakubjakubowski/xmlreader:1.0.0
     mem_limit: 512m
     environment:
       BP_JVM_VERSION: 15
