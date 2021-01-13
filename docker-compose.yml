@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  xmlreader:
+    image: jakubjakubowski/xmlreader:0.0.1-SNAPSHOT
+    mem_limit: 512m
+    environment:
+      BP_JVM_VERSION: 15
+      BPL_JVM_THREAD_COUNT: 50
+      JAVA_TOOL_OPTIONS: '-Xms32m -Xmx95m'
+    build:
+      context: .
+    ports:
+      - "8443:8443"
+      - "5005:5005"

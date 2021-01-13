@@ -6,7 +6,8 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.4.1</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
+
 	</parent>
 	<groupId>com.jakub</groupId>
 	<artifactId>xmlreader</artifactId>
@@ -16,6 +17,8 @@
 
 	<properties>
 		<java.version>15</java.version>
+		<maven.compiler.release>15</maven.compiler.release>
+		<jvm.options>-Xmx256M</jvm.options>
 	</properties>
 
 	<dependencies>
@@ -122,33 +125,27 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>2.4.0</version>
+				<version>2.4.1</version>
+				<configuration>
+					<jvmArguments>
+						-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=*:5005
+					</jvmArguments>
+					<image>
+						<env>
+							<BP_JVM_VERSION>15</BP_JVM_VERSION>
+							<BPL_JVM_THREAD_COUNT>50</BPL_JVM_THREAD_COUNT>
+							<JAVA_TOOL_OPTIONS>-Xms64m -Xmx256m</JAVA_TOOL_OPTIONS>
+						</env>
+					</image>
+				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.mock-server</groupId>
-				<artifactId>mockserver-maven-plugin</artifactId>
-				<version>5.11.2</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
 				<configuration>
-					<serverPort>1080</serverPort>
-					<logLevel>DEBUG</logLevel>
-					<initializationClass>org.mockserver.maven.ExampleInitializationClass</initializationClass>
+					<release>15</release>
 				</configuration>
-				<executions>
-					<execution>
-						<id>process-test-classes</id>
-						<phase>process-test-classes</phase>
-						<goals>
-							<goal>start</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>verify</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>stop</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
